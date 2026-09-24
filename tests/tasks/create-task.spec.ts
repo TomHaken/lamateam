@@ -40,6 +40,7 @@ test(
     const created = await test.step('Create a task with the entered due date', async () => {
       const task = await testData.createTask({ due_date: dueDate });
       expect(task.due?.date).toBe(dueDate);
+      expect(task.due?.is_recurring).toBe(false);
       expect(task).toMatchSchema(Schema.task);
       return task;
     });

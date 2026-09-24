@@ -62,6 +62,7 @@ test(
     const created = await test.step('Create a task with the entered due date', async () => {
       const task = await testData.createTask({ due_date: dueDate });
       expect(task.due?.date).toBe(dueDate);
+      expect(task.due?.is_recurring).toBe(false);
       expect(task).toMatchSchema(Schema.task);
       return task;
     });
@@ -113,6 +114,6 @@ Run: `npm run test:smoke` → `3 passed` (TC-001, TC-002, TC-003). `npx playwrig
 
 Run: `npm run lint && npm run format:check && npm run typecheck` → clean, no warnings.
 
-- [ ] **Step 7: Commit, push, PR, code review**
+- [x] **Step 7: Commit, push, PR, code review**
 
 `git commit -m "#5 Add TC-003 task due date smoke test"`, push, PR `Closes #5` from the PR template, then Superpowers `requesting-code-review`. After the merge, check that #5 is closed (the board moves it to Done).
