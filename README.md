@@ -64,6 +64,8 @@ tests/                  spec files, grouped by resource or suite
 
 ## Writing a test
 
+With Claude Code, the project skill `implementing-test-tickets` (`.claude/skills/`) takes a test ticket through the team workflow: ticket, plan, self-review, branch, verification against the real account (mutation check, token leak check), deletion guard, PR, code review and a human merge. Ask for example "implement TC-004".
+
 ```ts
 import { expect, Schema, test } from '../../src/fixtures';
 
