@@ -37,4 +37,4 @@
 - [x] **Step 5:** `npx playwright test` → `2 passed`, 0 skipped. `node scripts/check-no-token.mts` → OK
 - [x] **Step 6:** `git diff main -- tests/projects/projects.spec.ts tests/tasks/create-task.spec.ts` shows only removed lines, and the TC-001/TC-002 blocks are untouched
 - [x] **Step 7:** `npm run lint && npm run format:check && npm run typecheck` → clean
-- [ ] **Step 8:** Commit `#22 Remove the not implemented test placeholders`, PR `Closes #22`, Superpowers `requesting-code-review`
+- [x] **Step 8:** Commit `#22 Remove the not implemented test placeholders`, PR `Closes #22`, Superpowers `requesting-code-review`
