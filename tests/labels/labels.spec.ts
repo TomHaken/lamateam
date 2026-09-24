@@ -9,11 +9,16 @@ test(
   },
   async ({ api, testData }) => {
     // Diacritics on purpose: the name must come back exactly as entered.
-    // Kept short: the API silently cuts label names to 60 characters (the OpenAPI spec says 128),
-    // and the prefix alone is about 52 characters on CI.
+    // Kept short: the API silently cuts label names at about 60 characters (seen once, characters
+    // or bytes not confirmed; the OpenAPI spec says 128). uniqueName('label') alone is 52 characters
+    // on CI (50 locally), so only a short suffix fits.
     const name = `${uniqueName('label')} kůň`;
 
     const created = await test.step('Create a personal label with the entered name', async () => {
+      expect(
+        Buffer.byteLength(name),
+        'label names longer than 60 are cut by the API',
+      ).toBeLessThanOrEqual(60);
       const label = await testData.createLabel({ name });
       expect(label.name).toBe(name);
       expect(label).toMatchSchema(Schema.label);

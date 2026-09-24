@@ -22,7 +22,7 @@
 ## Review Focus
 
 1. **The name is only echoed, not stored:** the create response has the name, a later read might not. The test reads the label back with `GET /labels/{id}` and compares with the entered value.
-2. **Non-ASCII names:** the name contains `kůň` and must come back byte for byte. Found on the first run: the API silently cuts label names to 60 characters (the OpenAPI spec says `maxLength: 128`), so the full `Příliš žluťoučký kůň` suffix did not fit. The name stays under 60 characters also with the longer CI run id.
+2. **Non-ASCII names:** the name contains `kůň` and must come back byte for byte. Found on the first run: the API silently cuts label names at about 60 characters (the OpenAPI spec says `maxLength: 128`; characters or bytes not confirmed), so the full `Příliš žluťoučký kůň` suffix did not fit. The name is 56 characters (58 UTF-8 bytes) with the CI run id, and a guard assertion fails early if it ever grows past 60 bytes.
 3. **The response shape drifts from the documentation:** both responses are checked with `toMatchSchema(Schema.label)`, after the behaviour assertions.
 4. **A different label comes back:** the read-back `id` must equal the created `id`.
 5. **Leftover labels on the shared account:** `testData` deletes the label even when the test fails. After the run, no `autotest-...-local-` label is left (checked with a temporary spec).
@@ -52,11 +52,16 @@ test(
   },
   async ({ api, testData }) => {
     // Diacritics on purpose: the name must come back exactly as entered.
-    // Kept short: the API silently cuts label names to 60 characters (the OpenAPI spec says 128),
-    // and the prefix alone is about 52 characters on CI.
+    // Kept short: the API silently cuts label names at about 60 characters (seen once, characters
+    // or bytes not confirmed; the OpenAPI spec says 128). uniqueName('label') alone is 52 characters
+    // on CI (50 locally), so only a short suffix fits.
     const name = `${uniqueName('label')} kůň`;
 
     const created = await test.step('Create a personal label with the entered name', async () => {
+      expect(
+        Buffer.byteLength(name),
+        'label names longer than 60 are cut by the API',
+      ).toBeLessThanOrEqual(60);
       const label = await testData.createLabel({ name });
       expect(label.name).toBe(name);
       expect(label).toMatchSchema(Schema.label);
