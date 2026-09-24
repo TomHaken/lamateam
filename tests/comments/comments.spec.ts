@@ -28,6 +28,9 @@ test(
       expect(loaded.content).toBe(content);
       expect(loaded.item_id).toBe(task.id);
       expect(loaded.project_id ?? null).toBeNull();
+      // Also from the task's side, so a renamed `item_id` field does not look like a wrong task.
+      const taskComments = await api.comments.list({ task_id: task.id });
+      expect(taskComments.map((comment) => comment.id)).toEqual([created.id]);
       expect(loaded).toMatchSchema(Schema.comment);
     });
   },

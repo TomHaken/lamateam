@@ -25,7 +25,7 @@
 2. **Non-ASCII text:** the content contains `Příliš žluťoučký kůň` and must come back byte for byte.
 3. **The comment is attached to the wrong task (or to none):** the request sends `task_id`, but the API v1 response names the task field `item_id` (the spec schema `NoteSyncView` lists neither, see `Comment` in `src/clients/types.ts`). Both responses must have `item_id` equal to the created task id, and no `project_id` value.
 4. **A different comment comes back:** the read-back `id` must equal the created `id`.
-5. **Response shape drifts / leftovers:** both responses are checked with `toMatchSchema(Schema.comment)` last. `testData` deletes the comment, then the task, also when the test fails. After the run no `autotest-` task from this run is left.
+5. **Response shape drifts / leftovers:** both responses are checked with `toMatchSchema(Schema.comment)` last. `testData` deletes the comment, then the task, also when the test fails. After the run no `autotest-` task from any local run (`-local-`) is left.
 
 ---
 
@@ -71,6 +71,9 @@ test(
       expect(loaded.content).toBe(content);
       expect(loaded.item_id).toBe(task.id);
       expect(loaded.project_id ?? null).toBeNull();
+      // Also from the task's side, so a renamed `item_id` field does not look like a wrong task.
+      const taskComments = await api.comments.list({ task_id: task.id });
+      expect(taskComments.map((comment) => comment.id)).toEqual([created.id]);
       expect(loaded).toMatchSchema(Schema.comment);
     });
   },
