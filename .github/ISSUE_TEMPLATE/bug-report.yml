@@ -1,7 +1,7 @@
 name: Bug report
 description: The Todoist API or our test framework does not behave as expected
-title: "[Bug] "
-labels: ["type: bug", "status: triage"]
+title: '[Bug] '
+labels: ['type: bug', 'status: triage']
 body:
   - type: markdown
     attributes:
@@ -12,7 +12,7 @@ body:
     id: priority
     attributes:
       label: Priority
-      description: "P0 = blocks the team or CI, P1 = breaks a test case, P2 = workaround exists, P3 = cosmetic"
+      description: 'P0 = blocks the team or CI, P1 = breaks a test case, P2 = workaround exists, P3 = cosmetic'
       options:
         - P0 - critical
         - P1 - high

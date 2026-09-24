@@ -1,7 +1,7 @@
 name: Test case
 description: A test case to automate against the Todoist API
-title: "TC-XXX [Area] "
-labels: ["type: test-case", "status: triage"]
+title: 'TC-XXX [Area] '
+labels: ['type: test-case', 'status: triage']
 body:
   - type: markdown
     attributes:
@@ -83,4 +83,4 @@ body:
     attributes:
       label: Tags
       options:
-        - label: "`@smoke` (runs every hour on main)"
+        - label: '`@smoke` (runs every hour on main)'
