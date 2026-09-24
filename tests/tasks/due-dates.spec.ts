@@ -10,21 +10,26 @@ function secondsToMidnight(timeZone: string, now: Date = new Date()): number {
     minute: '2-digit',
     second: '2-digit',
   }).formatToParts(now);
-  const part = (type: Intl.DateTimeFormatPartTypes): number =>
-    Number(parts.find((p) => p.type === type)?.value);
+  const part = (type: Intl.DateTimeFormatPartTypes): number => {
+    const value = Number(parts.find((p) => p.type === type)?.value);
+    if (!Number.isFinite(value)) throw new Error(`No ${type} in the time of day in ${timeZone}.`);
+    return value;
+  };
   return 24 * 60 * 60 - (part('hour') * 3600 + part('minute') * 60 + part('second'));
 }
 
 /**
  * Todoist resolves "tomorrow" in the account timezone. Close to midnight there, the day could
- * change between our date and Todoist's, so a test starting in the last minute waits until a few
- * seconds after midnight (and gets that much more time).
+ * change between our date and Todoist's, so a test starting in the last minute waits until
+ * 15 seconds after midnight (and gets that much more time). The 15 s also cover a Todoist server
+ * clock that is a few seconds behind ours.
  */
 async function waitIfCloseToMidnight(timeZone: string): Promise<void> {
   const untilMidnight = secondsToMidnight(timeZone);
   if (untilMidnight >= 60) return;
-  const waitMs = (untilMidnight + 5) * 1000;
-  test.setTimeout(test.info().timeout + waitMs);
+  const waitMs = (untilMidnight + 15) * 1000;
+  // A timeout of 0 means no limit, so there is nothing to extend.
+  if (test.info().timeout > 0) test.setTimeout(test.info().timeout + waitMs);
   await new Promise((resolve) => setTimeout(resolve, waitMs));
 }
 
@@ -59,9 +64,11 @@ test(
       const loadedExplicit = await api.tasks.get(explicit.id);
       expect(todayIn(accountTimezone), 'The account day changed during the test').toBe(today);
 
-      expect(loadedInWords.due?.date).toBe(loadedExplicit.due?.date);
-      expect(loadedInWords.due?.date).toBe(tomorrow);
-      expect(loadedExplicit.due?.date).toBe(tomorrow);
+      expect(loadedInWords.due?.date, '"tomorrow" in words and the explicit date differ').toBe(
+        loadedExplicit.due?.date,
+      );
+      expect(loadedInWords.due?.date, 'The task with "tomorrow" in words').toBe(tomorrow);
+      expect(loadedExplicit.due?.date, "The task with tomorrow's explicit date").toBe(tomorrow);
       expect(loadedInWords.due?.is_recurring).toBe(false);
       expect(loadedExplicit.due?.is_recurring).toBe(false);
 

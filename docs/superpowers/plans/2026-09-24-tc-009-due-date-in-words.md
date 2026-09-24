@@ -23,7 +23,7 @@
 
 1. **The date is only echoed, not stored:** both tasks are read back with `GET /tasks/{id}` and the stored `due.date` is compared, not the create response.
 2. **Both are wrong the same way:** comparing the two tasks with each other alone would pass if both were off by a day. Each `due.date` is also compared with `tomorrowIn(accountTimezone)`.
-3. **Midnight in the account timezone:** if the account day changes between computing "tomorrow" and Todoist parsing the words, the test would fail for no reason. The test waits until a few seconds after midnight when it starts less than 60 s before it, and at the end asserts the account day did not change during the test, so a crossing gives a clear message instead of a vague date mismatch.
+3. **Midnight in the account timezone:** if the account day changes between computing "tomorrow" and Todoist parsing the words, the test would fail for no reason. The test waits until 15 seconds after midnight when it starts less than 60 s before it, and at the end asserts the account day did not change during the test, so a crossing gives a clear message instead of a vague date mismatch.
 4. **The words become a date-time or a recurring due:** `due.date` must be exactly the 10-character date with no time, and `due.is_recurring` must be `false` for both.
 5. **The words were not parsed at all:** the words task sends no date, only the words, so a `due` that is not `null` and equals tomorrow can only come from parsing them. (Todoist does not keep `due.string` as `tomorrow`; the first run showed it rewrites it to a date like `25 Sep`, so the test does not assert the string.)
 
@@ -54,21 +54,26 @@ function secondsToMidnight(timeZone: string, now: Date = new Date()): number {
     minute: '2-digit',
     second: '2-digit',
   }).formatToParts(now);
-  const part = (type: Intl.DateTimeFormatPartTypes): number =>
-    Number(parts.find((p) => p.type === type)?.value);
+  const part = (type: Intl.DateTimeFormatPartTypes): number => {
+    const value = Number(parts.find((p) => p.type === type)?.value);
+    if (!Number.isFinite(value)) throw new Error(`No ${type} in the time of day in ${timeZone}.`);
+    return value;
+  };
   return 24 * 60 * 60 - (part('hour') * 3600 + part('minute') * 60 + part('second'));
 }
 
 /**
  * Todoist resolves "tomorrow" in the account timezone. Close to midnight there, the day could
- * change between our date and Todoist's, so a test starting in the last minute waits until a few
- * seconds after midnight (and gets that much more time).
+ * change between our date and Todoist's, so a test starting in the last minute waits until
+ * 15 seconds after midnight (and gets that much more time). The 15 s also cover a Todoist server
+ * clock that is a few seconds behind ours.
  */
 async function waitIfCloseToMidnight(timeZone: string): Promise<void> {
   const untilMidnight = secondsToMidnight(timeZone);
   if (untilMidnight >= 60) return;
-  const waitMs = (untilMidnight + 5) * 1000;
-  test.setTimeout(test.info().timeout + waitMs);
+  const waitMs = (untilMidnight + 15) * 1000;
+  // A timeout of 0 means no limit, so there is nothing to extend.
+  if (test.info().timeout > 0) test.setTimeout(test.info().timeout + waitMs);
   await new Promise((resolve) => setTimeout(resolve, waitMs));
 }
 
@@ -103,9 +108,11 @@ test(
       const loadedExplicit = await api.tasks.get(explicit.id);
       expect(todayIn(accountTimezone), 'The account day changed during the test').toBe(today);
 
-      expect(loadedInWords.due?.date).toBe(loadedExplicit.due?.date);
-      expect(loadedInWords.due?.date).toBe(tomorrow);
-      expect(loadedExplicit.due?.date).toBe(tomorrow);
+      expect(loadedInWords.due?.date, '"tomorrow" in words and the explicit date differ').toBe(
+        loadedExplicit.due?.date,
+      );
+      expect(loadedInWords.due?.date, 'The task with "tomorrow" in words').toBe(tomorrow);
+      expect(loadedExplicit.due?.date, "The task with tomorrow's explicit date").toBe(tomorrow);
       expect(loadedInWords.due?.is_recurring).toBe(false);
       expect(loadedExplicit.due?.is_recurring).toBe(false);
 
