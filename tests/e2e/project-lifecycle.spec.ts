@@ -50,7 +50,8 @@ test(
         const loaded = await api.tasks.get(closed.id);
         expect(loaded.id).toBe(closed.id);
         expect(loaded.checked).toBe(true);
-        expect(loaded.completed_at).not.toBeNull();
+        expect(loaded.completed_at).toEqual(expect.any(String));
+        expect(loaded).toMatchSchema(Schema.task);
       }
     });
 
