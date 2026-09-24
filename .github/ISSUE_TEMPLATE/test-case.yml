@@ -1,0 +1,73 @@
+name: Test case
+description: A test case to automate against the Todoist API
+title: "TC-XXX [Resource] "
+labels: ["test-case"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One issue = one test case. Use the ID and wording from `Test Cases for automation.md`.
+        The title is the expected behaviour, e.g. `TC-002 [Tasks] A new task is created with the text that was entered`.
+  - type: input
+    id: tc-id
+    attributes:
+      label: Test case ID
+      placeholder: TC-016
+    validations:
+      required: true
+  - type: dropdown
+    id: resource
+    attributes:
+      label: Resource
+      options:
+        - Projects
+        - Tasks
+        - Labels
+        - Comments
+        - User
+        - E2E
+    validations:
+      required: true
+  - type: dropdown
+    id: wave
+    attributes:
+      label: Wave
+      options:
+        - 1 - smoke
+        - 2 - functional (single feature)
+        - 3 - end-to-end
+        - 4 - alternative scenarios
+        - 5 - critical negative scenarios
+    validations:
+      required: true
+  - type: textarea
+    id: preconditions
+    attributes:
+      label: Preconditions and test data
+      description: What must exist first. Test data uses the `autotest-<run id>-` prefix and is cleaned up by fixtures.
+      placeholder: A project created by the `testData` fixture
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      placeholder: |
+        1. POST /tasks with content "autotest-..."
+        2. GET /tasks/{id}
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Status code, response fields, and schema (`toMatchSchema`).
+      placeholder: |
+        - 200, the task comes back with the entered content
+        - The response matches the OpenAPI schema
+    validations:
+      required: true
+  - type: checkboxes
+    id: tags
+    attributes:
+      label: Tags
+      options:
+        - label: "`@smoke` (runs every hour on main)"
