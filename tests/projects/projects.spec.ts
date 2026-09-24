@@ -10,16 +10,16 @@ test(
 
     const created = await test.step('Create a project with the entered name', async () => {
       const project = await testData.createProject({ name });
-      expect(project).toMatchSchema(Schema.project);
       expect(project.name).toBe(name);
+      expect(project).toMatchSchema(Schema.project);
       return project;
     });
 
     await test.step('Load the project again and check its name', async () => {
       const loaded = await api.projects.get(created.id);
-      expect(loaded).toMatchSchema(Schema.project);
       expect(loaded.id).toBe(created.id);
       expect(loaded.name).toBe(name);
+      expect(loaded).toMatchSchema(Schema.project);
     });
   },
 );

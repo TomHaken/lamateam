@@ -53,16 +53,16 @@ test(
 
     const created = await test.step('Create a project with the entered name', async () => {
       const project = await testData.createProject({ name });
-      expect(project).toMatchSchema(Schema.project);
       expect(project.name).toBe(name);
+      expect(project).toMatchSchema(Schema.project);
       return project;
     });
 
     await test.step('Load the project again and check its name', async () => {
       const loaded = await api.projects.get(created.id);
-      expect(loaded).toMatchSchema(Schema.project);
       expect(loaded.id).toBe(created.id);
       expect(loaded.name).toBe(name);
+      expect(loaded).toMatchSchema(Schema.project);
     });
   },
 );
@@ -104,7 +104,7 @@ Run: `npx playwright test tests/tmp-leftovers.spec.ts` → `1 passed`, then `rm 
 Run: `npm run lint && npm run format:check && npm run typecheck`
 Expected: no errors, no warnings
 
-- [ ] **Step 7: Commit, push, PR**
+- [x] **Step 7: Commit, push, PR**
 
 ```bash
 git add tests/projects/projects.spec.ts docs/superpowers/plans/2026-09-24-tc-001-create-project.md
