@@ -26,17 +26,3 @@ test(
     });
   },
 );
-
-// Placeholder until #8 is implemented: replace `test.fixme` with `test` and a real body,
-// keep the title, tags and the `issue` annotation.
-test.fixme(
-  'TC-006 A renamed project loads under the new name the next time it is opened, not only in the response to the update',
-  {
-    tag: ['@TC-006', '@regression'],
-    annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/8' },
-  },
-  () => {
-    // Fails on purpose, so a placeholder turned into `test` without a body cannot pass.
-    expect(false, 'Not implemented yet, see the linked issue').toBe(true);
-  },
-);

@@ -80,7 +80,7 @@ test('TC-002 A new task is created with the text that was entered', {
 });
 ```
 
-- Every test links its ticket: `annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/<id>' }`, shown in the HTML report. Tests not implemented yet are `test.fixme` placeholders with the final title, tags and annotation.
+- Every test links its ticket: `annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/<id>' }`, shown in the HTML report.
 - There is no login. The API token is sent as a Bearer header on every request.
 - `testData.create*` builds a unique `autotest-<run id>-` name and deletes the item after the test, also when it fails. Use `testData.track(kind, id)` for things created another way.
 - `api.<resource>.send(method, path, options)` returns the raw response, for status code checks.
