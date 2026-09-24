@@ -88,8 +88,12 @@ test(
     });
 
     await test.step('With the valid token, check that no project with that name exists', async () => {
-      const names = (await api.projects.list()).map((project) => project.name);
-      expect(names).not.toContain(payload.name);
+      const leaked = (await api.projects.list()).filter(
+        (project) => project.name === payload.name,
+      );
+      // Track before asserting, so a project created despite the rejection is still deleted.
+      for (const project of leaked) testData.track('project', project.id);
+      expect(leaked).toEqual([]);
     });
   },
 );
@@ -109,8 +113,12 @@ test(
     });
 
     await test.step('With the valid token, check that no project with that name exists', async () => {
-      const names = (await api.projects.list()).map((project) => project.name);
-      expect(names).not.toContain(payload.name);
+      const leaked = (await api.projects.list()).filter(
+        (project) => project.name === payload.name,
+      );
+      // Track before asserting, so a project created despite the rejection is still deleted.
+      for (const project of leaked) testData.track('project', project.id);
+      expect(leaked).toEqual([]);
     });
   },
 );
