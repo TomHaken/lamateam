@@ -70,6 +70,8 @@ test(
       const loaded = await api.tasks.get(created.id);
       expect(loaded.id).toBe(created.id);
       expect(loaded.content).toBe(content);
+      // A clear failure if the account has no Inbox, instead of a confusing project mismatch.
+      expect(account.inbox_project_id).not.toBeNull();
       expect(loaded.project_id).toBe(account.inbox_project_id);
       expect(loaded.description).toBe('');
       expect(loaded.priority).toBe(1);
@@ -86,7 +88,9 @@ test(
 
     await test.step('Create a task with every optional field and check each one is stored as entered', async () => {
       const project = await testData.createProject();
-      const label = await testData.createLabel();
+      const labelName = uniqueName('label');
+      const label = await testData.createLabel({ name: labelName });
+      expect(label.name).toBe(labelName);
       const entered: Required<
         Pick<
           CreateTaskPayload,

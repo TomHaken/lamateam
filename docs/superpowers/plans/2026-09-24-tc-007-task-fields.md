@@ -59,6 +59,8 @@ test(
       const loaded = await api.tasks.get(created.id);
       expect(loaded.id).toBe(created.id);
       expect(loaded.content).toBe(content);
+      // A clear failure if the account has no Inbox, instead of a confusing project mismatch.
+      expect(account.inbox_project_id).not.toBeNull();
       expect(loaded.project_id).toBe(account.inbox_project_id);
       expect(loaded.description).toBe('');
       expect(loaded.priority).toBe(1);
@@ -75,7 +77,9 @@ test(
 
     await test.step('Create a task with every optional field and check each one is stored as entered', async () => {
       const project = await testData.createProject();
-      const label = await testData.createLabel();
+      const labelName = uniqueName('label');
+      const label = await testData.createLabel({ name: labelName });
+      expect(label.name).toBe(labelName);
       const entered: Required<
         Pick<CreateTaskPayload, 'content' | 'description' | 'priority' | 'labels' | 'due_date' | 'project_id'>
       > = {
@@ -127,6 +131,6 @@ Run: `npm run test:smoke` → all passed. The full run is limited to this file, 
 
 Run: `npm run lint && npm run format:check && npm run typecheck` → clean, no warnings.
 
-- [ ] **Step 7: Commit, push, PR, code review**
+- [x] **Step 7: Commit, push, PR, code review**
 
 `git commit -m "#9 Add TC-007 task required and optional fields test"`, push, PR `Closes #9` from the PR template, then Superpowers `requesting-code-review`.
