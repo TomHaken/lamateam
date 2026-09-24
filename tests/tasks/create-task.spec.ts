@@ -25,25 +25,3 @@ test(
     });
   },
 );
-
-test.fixme(
-  'TC-003 A new task is created with the due date that was entered',
-  {
-    tag: ['@TC-003', '@smoke'],
-    annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/5' },
-  },
-  () => {
-    expect(false, 'Not implemented yet, see the linked issue').toBe(true);
-  },
-);
-
-test.fixme(
-  'TC-007 A task can be created with the required fields only, and every optional field is stored exactly as it was entered',
-  {
-    tag: ['@TC-007', '@regression'],
-    annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/9' },
-  },
-  () => {
-    expect(false, 'Not implemented yet, see the linked issue').toBe(true);
-  },
-);
