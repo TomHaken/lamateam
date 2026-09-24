@@ -36,7 +36,7 @@ Every test goes from ticket to merged PR through one fixed workflow. **Violating
 ## Test conventions
 
 - The framework is complete: clients for projects, tasks, labels, comments, user (`api.<resource>`), `testData.createProject/createTask/createLabel/createComment`, `accountTimezone`, `Schema.*`. A test needs no framework changes. If one seems missing, read `src/` again before adding anything
-- File: the one the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md` names for the TC (e.g. TC-004 → `tests/labels/labels.spec.ts`). Add to the file if it exists, never replace it
+- File: the one the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md` names for the TC (e.g. TC-004 → `tests/labels/labels.spec.ts`). If the file exists, add to it and never replace it. If it does not exist yet, create it
 - Title `TC-XXX <text from Test Cases for automation.md>`, tags `@TC-XXX` + suite (`@smoke` wave 1, `@regression` 2 and 4, `@e2e` 3, `@negative` 5), `annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/<n>' }`
 - One `test.step()` per ticket step. Data only via `testData`. **Read back** with GET, compare with the entered value, not the create response
 - Behaviour assertions first, `toMatchSchema` last (the schema is loose, e.g. `due` is just `object`)

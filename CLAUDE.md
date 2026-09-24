@@ -5,6 +5,7 @@ Playwright + TypeScript API tests (no browser) against the Todoist API v1, on a 
 ## Workflow
 
 - Implementing a test ticket: use the project skill `implementing-test-tickets` (`.claude/skills/`). Every step, also under time pressure.
+- The subagent `test-writer` (`.claude/agents/`) runs the same skill in its own context, but only when the user names it explicitly. It never merges.
 - Every change goes through a GitHub issue → branch `<issue>-<slug>` from a freshly pulled `main` → PR with `Closes #<issue>` → code review → **a human merges** (or explicitly asks you to).
 - Commit subject `#<issue> <summary>` (the `commit-msg` hook enforces it). Never commit or push to `main` (the `pre-push` hook blocks it).
 - New issues follow the issue forms (`.github/ISSUE_TEMPLATE/`): Priority and Area become labels automatically, and a PR gets its issue's labels. Reuse the backlog ticket, never create a duplicate.
