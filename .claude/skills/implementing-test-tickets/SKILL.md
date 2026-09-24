@@ -29,14 +29,14 @@ Every test goes from ticket to merged PR through one fixed workflow. **Violating
 - Run against the real account: `npx playwright test <file>` - **never with `--reporter=...`** (it disables the token redaction reporter)
 - **Mutation check:** break one expectation, see it fail with a readable Expected/Received, restore
 - `node scripts/check-no-token.mts` after the failed run → OK
-- Leftovers: no `autotest-` data left on the account (temporary uncommitted spec)
+- Leftovers: no `autotest-` data left on the account. Check with a temporary, uncommitted spec that lists the resource (e.g. `api.tasks.list()`) and expects no item whose name starts with `autotest-` and contains `-local-`. Run it, then delete it
 - `npm run test:smoke` / full run, then `npm run lint && npm run format:check && npm run typecheck` with no warnings
 - Existing tests in the same file are untouched (diff has no removed lines there)
 
 ## Test conventions
 
 - The framework is complete: clients for projects, tasks, labels, comments, user (`api.<resource>`), `testData.createProject/createTask/createLabel/createComment`, `accountTimezone`, `Schema.*`. A test needs no framework changes. If one seems missing, read `src/` again before adding anything
-- File: the one the "Test files" table in `docs/test-architecture-plan.md` names for the TC (e.g. TC-004 → `tests/labels/labels.spec.ts`). Add to the file if it exists, never replace it
+- File: the one the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md` names for the TC (e.g. TC-004 → `tests/labels/labels.spec.ts`). Add to the file if it exists, never replace it
 - Title `TC-XXX <text from Test Cases for automation.md>`, tags `@TC-XXX` + suite (`@smoke` wave 1, `@regression` 2 and 4, `@e2e` 3, `@negative` 5), `annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/<n>' }`
 - One `test.step()` per ticket step. Data only via `testData`. **Read back** with GET, compare with the entered value, not the create response
 - Behaviour assertions first, `toMatchSchema` last (the schema is loose, e.g. `due` is just `object`)

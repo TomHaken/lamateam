@@ -19,16 +19,16 @@ Playwright + TypeScript API tests (no browser) against the Todoist API v1, on a 
 
 ## Commands
 
-| Command                                                     | Use                                    |
-| ----------------------------------------------------------- | -------------------------------------- |
-| `npm ci`                                                    | Install, also sets up the git hooks    |
-| `npx playwright test <file>`                                | Run tests against the real account     |
-| `npm run test:smoke`                                        | `@smoke` tests only (hourly on `main`) |
-| `npm run lint && npm run format:check && npm run typecheck` | Must be clean before a PR              |
+| Command                                                     | Use                                                                                                      |
+| ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `npm ci`                                                    | Install, also sets up the git hooks                                                                      |
+| `npx playwright test <file>`                                | Run tests against the real account (needs `.env` with `TODOIST_API_TOKEN`, see README "Getting started") |
+| `npm run test:smoke`                                        | `@smoke` tests only (hourly on `main`)                                                                   |
+| `npm run lint && npm run format:check && npm run typecheck` | Must be clean before a PR                                                                                |
 
 ## Test conventions
 
-- File per the "Test files" table in `docs/test-architecture-plan.md`. Add to an existing file, never replace it.
+- File per the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md`. Add to an existing file, never replace it.
 - Title `TC-XXX <text from Test Cases for automation.md>`, tags `@TC-XXX` plus the suite tag, and `annotation: { type: 'issue', description: '<ticket URL>' }`.
 - Test data only through the `testData` fixture (`autotest-<run id>-` prefix, cleaned up). Read back with GET and compare with the entered value. Behaviour assertions first, `toMatchSchema` last.
 - Dates from `accountTimezone` and `src/utils/dates.ts`, never the runner clock (CI runs in UTC).
