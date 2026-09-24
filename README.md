@@ -66,6 +66,8 @@ tests/                  spec files, grouped by resource or suite
 
 With Claude Code, the project skill `implementing-test-tickets` (`.claude/skills/`) takes a test ticket through the team workflow: ticket, plan, self-review, branch, verification against the real account (mutation check, token leak check), deletion guard, PR, code review and a human merge. Ask for example "implement TC-004".
 
+To hand a whole ticket to a separate agent, call the project subagent `test-writer` (`.claude/agents/`) explicitly, for example `@test-writer TC-004`. It works in its own context with the same skill, stops at a reviewed open PR (it never merges) and reports back. A new or changed agent file is not available at once: Claude Code picks it up after a short delay, or in a new session.
+
 ```ts
 import { expect, Schema, test } from '../../src/fixtures';
 

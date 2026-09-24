@@ -5,6 +5,7 @@ Playwright + TypeScript API tests (no browser) against the Todoist API v1, on a 
 ## Workflow
 
 - Implementing a test ticket: use the project skill `implementing-test-tickets` (`.claude/skills/`). Every step, also under time pressure.
+- The subagent `test-writer` (`.claude/agents/`) runs the same skill in its own context, but only when the user names it explicitly. It never merges.
 - Every change goes through a GitHub issue → branch `<issue>-<slug>` from a freshly pulled `main` → PR with `Closes #<issue>` → code review → **a human merges** (or explicitly asks you to).
 - Commit subject `#<issue> <summary>` (the `commit-msg` hook enforces it). Never commit or push to `main` (the `pre-push` hook blocks it).
 - New issues follow the issue forms (`.github/ISSUE_TEMPLATE/`): Priority and Area become labels automatically, and a PR gets its issue's labels. Reuse the backlog ticket, never create a duplicate.
@@ -28,7 +29,7 @@ Playwright + TypeScript API tests (no browser) against the Todoist API v1, on a 
 
 ## Test conventions
 
-- File per the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md`. Add to an existing file, never replace it.
+- File per the file → test case table (`| File | Tests | Tag |`) in `docs/test-architecture-plan.md`. If the file exists, add to it and never replace it. If not, create it.
 - Title `TC-XXX <text from Test Cases for automation.md>`, tags `@TC-XXX` plus the suite tag, and `annotation: { type: 'issue', description: '<ticket URL>' }`.
 - Test data only through the `testData` fixture (`autotest-<run id>-` prefix, cleaned up). Read back with GET and compare with the entered value. Behaviour assertions first, `toMatchSchema` last.
 - Dates from `accountTimezone` and `src/utils/dates.ts`, never the runner clock (CI runs in UTC).
