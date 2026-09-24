@@ -26,3 +26,32 @@ test(
     });
   },
 );
+
+test(
+  'TC-006 A renamed project loads under the new name the next time it is opened, not only in the response to the update',
+  {
+    tag: ['@TC-006', '@regression'],
+    annotation: { type: 'issue', description: 'https://github.com/TomHaken/lamateam/issues/8' },
+  },
+  async ({ api, testData }) => {
+    const project = await test.step('Create a project to rename', () => testData.createProject());
+
+    // Diacritics on purpose: the new name must come back exactly as entered.
+    const newName = `${uniqueName('project-renamed')} Příliš žluťoučký kůň`;
+    expect(newName).not.toBe(project.name);
+
+    await test.step('Rename the project', async () => {
+      const updated = await api.projects.update(project.id, { name: newName });
+      expect(updated.id).toBe(project.id);
+      expect(updated.name).toBe(newName);
+      expect(updated).toMatchSchema(Schema.project);
+    });
+
+    await test.step('Load the project again and check it has the new name', async () => {
+      const loaded = await api.projects.get(project.id);
+      expect(loaded.id).toBe(project.id);
+      expect(loaded.name).toBe(newName);
+      expect(loaded).toMatchSchema(Schema.project);
+    });
+  },
+);
