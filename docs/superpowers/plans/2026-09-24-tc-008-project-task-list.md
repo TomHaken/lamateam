@@ -20,9 +20,9 @@
 
 ## Review Focus
 
-1. **Filter ignored, list returns everything:** if `project_id` were ignored, the list would contain B's tasks and every other task on the shared account. The exact id set comparison with A's three tasks fails on any extra item, and a separate check says no B task is in the list.
+1. **Filter ignored, list returns everything:** if `project_id` were ignored, the list would contain B's tasks and every other task on the shared account. The exact id set comparison with A's three tasks fails on any extra item, and a separate check, which runs first so it fails with a short message, says no B task is in the list.
 2. **A task of A is missing (for example only the first page is read):** the exact id set comparison fails on a missing item. `api.tasks.list` uses `listAll`, which follows `next_cursor`.
-3. **B's absence proves nothing because B's tasks never landed in B:** a guard in the setup step lists project B and expects exactly B's two tasks, so "no B task in A" is a real check.
+3. **B's absence proves nothing because B's tasks never landed in B:** a guard step lists project B and expects exactly B's two tasks, so "no B task in A" is a real check.
 4. **Items claim the wrong project:** every listed item must have `project_id === projectA.id`.
 5. **The list returns the right ids with wrong content:** the listed contents are compared with the entered texts (not with the create responses), and each item is checked against `Schema.task` last.
 
@@ -61,7 +61,7 @@ test(
     const contentsA = [uniqueName('task-a'), uniqueName('task-a'), uniqueName('task-a')];
     const contentsB = [uniqueName('task-b'), uniqueName('task-b')];
 
-    const { projectA, tasksA, tasksB } =
+    const { projectA, projectB, tasksA, tasksB } =
       await test.step('Create project A with three tasks and project B with two tasks', async () => {
         const projectA = await testData.createProject();
         const projectB = await testData.createProject();
@@ -73,29 +73,36 @@ test(
         for (const content of contentsB) {
           tasksB.push(await testData.createTask({ content, project_id: projectB.id }));
         }
-
-        // Guard: B's tasks really are in B, so "not in A's list" below is not true by accident.
-        const listedB = await api.tasks.list({ project_id: projectB.id });
-        expect(idsOf(listedB)).toEqual(idsOf(tasksB));
-
-        return { projectA, tasksA, tasksB };
+        return { projectA, projectB, tasksA, tasksB };
       });
+
+    // Guard: B's tasks really are in B, so "no B task in A's list" below is not true by accident.
+    await test.step('Check that project B lists exactly its own two tasks', async () => {
+      const listedB = await api.tasks.list({ project_id: projectB.id });
+      expect(idsOf(listedB)).toEqual(idsOf(tasksB));
+    });
 
     await test.step('List the tasks of project A (all pages)', async () => {
       const listedA = await api.tasks.list({ project_id: projectA.id });
 
+      // Cheap, specific checks first: if the filter is ignored, these fail with a short message
+      // instead of a diff of every active task on the shared account.
+      const idsB = new Set(tasksB.map((task) => task.id));
+      expect(
+        listedA.filter((task) => idsB.has(task.id)).map((task) => task.content),
+        "project B's tasks in project A's list",
+      ).toEqual([]);
+      for (const task of listedA) {
+        expect(task.project_id, `project_id of listed task ${task.id}`).toBe(projectA.id);
+      }
+
       // Project A is new and only this test writes to it, so the list must be exactly its tasks.
       expect(idsOf(listedA)).toEqual(idsOf(tasksA));
-      for (const task of listedA) {
-        expect(task.project_id).toBe(projectA.id);
-      }
-      const idsB = new Set(tasksB.map((task) => task.id));
-      expect(listedA.filter((task) => idsB.has(task.id))).toEqual([]);
       // Compared with the entered texts, not with the create responses.
       expect(listedA.map((task) => task.content).sort()).toEqual([...contentsA].sort());
 
       for (const task of listedA) {
-        expect(task).toMatchSchema(Schema.task);
+        expect(task, `listed task ${task.id}`).toMatchSchema(Schema.task);
       }
     });
   },
@@ -109,8 +116,10 @@ Expected: `1 passed`
 
 - [x] **Step 3: Prove the test can fail (mutation check)**
 
-Temporarily change the list step's first assertion to `expect(idsOf(listedA)).toEqual(idsOf([...tasksA, ...tasksB]));` and run `npx playwright test tests/tasks/task-list.spec.ts`.
+Temporarily change the list step's exact id assertion to `expect(idsOf(listedA)).toEqual(idsOf([...tasksA, ...tasksB]));` and run `npx playwright test tests/tasks/task-list.spec.ts`.
 Expected: `1 failed` with Expected listing five ids and Received three. Restore the line.
+
+After code review (the assertions were reordered so the cheap, specific checks come first), a second mutation simulates the risk itself: `api.tasks.list()` without `project_id`. Expected: `1 failed` on `project B's tasks in project A's list` with B's two task names in Received. Restore the line.
 
 - [x] **Step 4: Leak check and leftovers**
 
