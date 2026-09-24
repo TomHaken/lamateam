@@ -38,9 +38,9 @@ test(
 
     // Diacritics on purpose: the new name must come back exactly as entered.
     const newName = `${uniqueName('project-renamed')} Příliš žluťoučký kůň`;
-    expect(newName).not.toBe(project.name);
 
     await test.step('Rename the project', async () => {
+      expect(newName).not.toBe(project.name);
       const updated = await api.projects.update(project.id, { name: newName });
       expect(updated.id).toBe(project.id);
       expect(updated.name).toBe(newName);
