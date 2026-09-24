@@ -1,0 +1,82 @@
+name: Bug report
+description: The Todoist API or our test framework does not behave as expected
+title: '[Bug] '
+labels: ['type: bug', 'status: triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste the API token.** Check logs, traces and screenshots for `Authorization` headers before attaching them.
+        Priority and Area become labels automatically.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: 'P0 = blocks the team or CI, P1 = breaks a test case, P2 = workaround exists, P3 = cosmetic'
+      options:
+        - P0 - critical
+        - P1 - high
+        - P2 - medium
+        - P3 - low
+      default: 1
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Projects to E2E = the Todoist API (application under test), Framework and CI = our code
+      options:
+        - Projects
+        - Tasks
+        - Labels
+        - Comments
+        - User
+        - E2E
+        - Framework
+        - CI
+    validations:
+      required: true
+  - type: input
+    id: tc-id
+    attributes:
+      label: Related test case
+      placeholder: TC-003
+  - type: input
+    id: endpoint
+    attributes:
+      label: Endpoint
+      placeholder: POST /api/v1/tasks
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: Status code and response body (redacted).
+    validations:
+      required: true
+  - type: input
+    id: run
+    attributes:
+      label: CI run or test report link
+  - type: checkboxes
+    id: no-token
+    attributes:
+      label: Security
+      options:
+        - label: I checked that nothing here contains the API token
+          required: true

@@ -1,0 +1,6 @@
+# Every issue goes through a form, so it always gets type, priority and area labels.
+blank_issues_enabled: false
+contact_links:
+  - name: Todoist API docs
+    url: https://developer.todoist.com/api/v1/
+    about: Check the documented behaviour before reporting an API bug.

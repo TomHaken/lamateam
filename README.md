@@ -31,6 +31,18 @@ cp .env.example .env        # then fill in TODOIST_API_TOKEN
 - Git hooks: `pre-commit` lints and formats staged files, `commit-msg` requires `#<issue id> <summary>`, `pre-push` blocks direct pushes to `main`. `npm ci` also sets `core.commentChar` to `;` so Git does not strip `#` subject lines written in the editor.
 - The architecture is described in [docs/test-architecture-plan.md](docs/test-architecture-plan.md).
 
+## Issues, pull requests and labels
+
+- New issues go through a form (Test case, Bug report, Task). Priority and Area from the form become labels automatically.
+- A PR closes its issue with `Closes #<id>` and gets the issue's `type:`, `priority:` and `area:` labels. The PR template has the checklist.
+
+| Group | Labels | Meaning |
+|-------|--------|---------|
+| `type:` | `test-case`, `bug`, `feature`, `chore`, `docs` | What kind of work it is |
+| `priority:` | `P0` critical, `P1` high, `P2` medium, `P3` low | P0 blocks the team or CI, fix now |
+| `area:` | `projects`, `tasks`, `labels`, `comments`, `user`, `e2e`, `framework`, `ci` | Todoist resource or part of our code |
+| `status:` | `triage`, `blocked` | `triage` = new, priority and owner not confirmed yet |
+
 ## Project structure
 
 ```
@@ -46,7 +58,8 @@ src/
   global-setup.ts       deletes `autotest-` data older than 1 hour
 scripts/                check-no-token, report-flaky, update-openapi
 tests/                  spec files, grouped by resource or suite
-.github/workflows/      pr.yml (every PR), smoke.yml (hourly @smoke on main)
+.github/workflows/      pr.yml (every PR), smoke.yml (hourly @smoke on main), labels.yml
+.github/ISSUE_TEMPLATE/ issue forms; pull_request_template.md
 ```
 
 ## Writing a test

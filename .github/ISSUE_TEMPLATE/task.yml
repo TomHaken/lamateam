@@ -1,0 +1,52 @@
+name: Task
+description: Framework, CI, docs or repo work that is not a test case or a bug
+labels: ['status: triage']
+body:
+  - type: markdown
+    attributes:
+      value: Priority, Area and Type become labels automatically.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Chore (tooling, CI, repo setup)
+        - Feature (new framework capability)
+        - Docs
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 - critical
+        - P1 - high
+        - P2 - medium
+        - P3 - low
+      default: 2
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Framework
+        - CI
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What and why
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
