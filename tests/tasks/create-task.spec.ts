@@ -1,6 +1,7 @@
 import { expect, test } from '../../src/fixtures';
 
-// Placeholders until each ticket is implemented: replace `test.fixme` with `test` and a real body.
+// Placeholders until each ticket is implemented: replace `test.fixme` with `test` and a real body,
+// keep the title, tags and the `issue` annotation.
 // The body fails on purpose, so a placeholder turned into `test` without a body cannot pass.
 
 test.fixme(
