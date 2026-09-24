@@ -1,0 +1,80 @@
+name: Labels
+
+# Issue forms cannot turn a dropdown into a label, so this workflow does it: Priority, Area and
+# (Task form) Type become `priority:`, `area:` and `type:` labels. A PR gets the same labels as
+# the issues it closes. pull_request (never pull_request_target), as in pr.yml.
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, edited, reopened]
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  issue:
+    name: Label the issue from its form
+    if: ${{ github.event_name == 'issues' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      NUMBER: ${{ github.event.issue.number }}
+      BODY: ${{ github.event.issue.body }}
+    steps:
+      - name: Add priority, area and type labels
+        run: |
+          # First non-empty line under "### <heading>" in the issue form body.
+          field() {
+            printf '%s\n' "$BODY" | tr -d '\r' \
+              | awk -v h="### $1" '$0 == h { f = 1; next } f && /^### / { exit } f && NF { print; exit }'
+          }
+          args=()
+          priority=$(field Priority | grep -oE '^P[0-3]' || true)
+          [ -n "$priority" ] && args+=(-f "labels[]=priority: $priority")
+          area=$(field Area | tr '[:upper:]' '[:lower:]')
+          case "$area" in
+            projects | tasks | labels | comments | user | e2e | framework | ci) args+=(-f "labels[]=area: $area") ;;
+          esac
+          case "$(field Type)" in
+            Chore*) args+=(-f "labels[]=type: chore") ;;
+            Feature*) args+=(-f "labels[]=type: feature") ;;
+            Docs*) args+=(-f "labels[]=type: docs") ;;
+          esac
+          if [ ${#args[@]} -gt 0 ]; then
+            gh api --method POST "repos/$GH_REPO/issues/$NUMBER/labels" "${args[@]}" > /dev/null
+          fi
+
+  pull-request:
+    name: Copy labels from the closed issues
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Add type, priority and area labels of the linked issues
+        run: |
+          args=()
+          while IFS= read -r label; do
+            args+=(-f "labels[]=$label")
+          done < <(
+            gh pr view "$PR_NUMBER" --json closingIssuesReferences \
+              --jq '.closingIssuesReferences[].number' \
+              | while read -r issue; do
+                  gh issue view "$issue" --json labels \
+                    --jq '.labels[].name | select(test("^(type|priority|area): "))'
+                done | sort -u
+          )
+          if [ ${#args[@]} -gt 0 ]; then
+            gh api --method POST "repos/$GH_REPO/issues/$PR_NUMBER/labels" "${args[@]}" > /dev/null
+          fi

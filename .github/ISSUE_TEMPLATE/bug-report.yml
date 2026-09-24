@@ -1,19 +1,40 @@
 name: Bug report
-description: The Todoist API or the test framework does not behave as expected
+description: The Todoist API or our test framework does not behave as expected
 title: "[Bug] "
-labels: ["bug"]
+labels: ["type: bug", "status: triage"]
 body:
   - type: markdown
     attributes:
       value: |
         **Never paste the API token.** Check logs, traces and screenshots for `Authorization` headers before attaching them.
+        Priority and Area become labels automatically.
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: "P0 = blocks the team or CI, P1 = breaks a test case, P2 = workaround exists, P3 = cosmetic"
+      options:
+        - P0 - critical
+        - P1 - high
+        - P2 - medium
+        - P3 - low
+      default: 1
+    validations:
+      required: true
   - type: dropdown
     id: area
     attributes:
-      label: Where is the bug
+      label: Area
+      description: Projects to E2E = the Todoist API (application under test), Framework and CI = our code
       options:
-        - Todoist API (application under test)
-        - Test framework (clients, fixtures, reporters, CI)
+        - Projects
+        - Tasks
+        - Labels
+        - Comments
+        - User
+        - E2E
+        - Framework
+        - CI
     validations:
       required: true
   - type: input
