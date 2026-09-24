@@ -65,10 +65,14 @@ test(
       const closed = await api.tasks.get(task.id);
       expect(closed.checked).toBe(true);
       expect(await openTasksWithOurContent()).toEqual([]);
+      expect(closed).toMatchSchema(Schema.task);
     });
 
     await test.step('Reopen the task', async () => {
       await api.tasks.reopen(task.id);
+      const state = await api.tasks.get(task.id);
+      expect(state.checked).toBe(false);
+      expect(state.completed_at).toBeNull();
     });
 
     await test.step('Read the task back and find it in the open task list', async () => {
@@ -76,7 +80,6 @@ test(
       expect(reopened.id).toBe(task.id);
       expect(reopened.content).toBe(content);
       expect(reopened.checked).toBe(false);
-      expect(reopened.completed_at).toBeNull();
 
       // Exactly one open task with our content, and it is the original one, not a copy.
       expect(await openTasksWithOurContent()).toEqual([task.id]);
@@ -93,7 +96,7 @@ Expected: `1 passed`
 
 - [x] **Step 3: Prove the test can fail (mutation check)**
 
-Temporarily change `expect(reopened.checked).toBe(false);` to `toBe(true)` and run again.
+Temporarily change `expect(state.checked).toBe(false);` (reopen step) to `toBe(true)` and run again.
 Expected: `1 failed` with `Expected: true`, `Received: false`. Restore the line.
 
 - [x] **Step 4: Leak check and leftovers**
@@ -108,6 +111,10 @@ Run: `npm run test:smoke` → all passed.
 
 Run: `npm run lint && npm run format:check && npm run typecheck` → clean, no warnings.
 
-- [x] **Step 7: Commit, push, PR, code review**
+- [x] **Step 7: Commit, push, PR**
 
-`git commit -m "#13 Add TC-012 reopen task regression test"`, push, PR `Closes #13` from the PR template, then Superpowers `requesting-code-review`.
+`git commit -m "#13 Add TC-012 reopen task regression test"`, push, PR `Closes #13` from the PR template.
+
+- [x] **Step 8: Code review**
+
+Superpowers `requesting-code-review` with a fresh reviewer. Fix the findings, post the summary comment on the PR.

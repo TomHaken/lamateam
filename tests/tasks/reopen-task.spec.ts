@@ -22,10 +22,14 @@ test(
       const closed = await api.tasks.get(task.id);
       expect(closed.checked).toBe(true);
       expect(await openTasksWithOurContent()).toEqual([]);
+      expect(closed).toMatchSchema(Schema.task);
     });
 
     await test.step('Reopen the task', async () => {
       await api.tasks.reopen(task.id);
+      const state = await api.tasks.get(task.id);
+      expect(state.checked).toBe(false);
+      expect(state.completed_at).toBeNull();
     });
 
     await test.step('Read the task back and find it in the open task list', async () => {
@@ -33,7 +37,6 @@ test(
       expect(reopened.id).toBe(task.id);
       expect(reopened.content).toBe(content);
       expect(reopened.checked).toBe(false);
-      expect(reopened.completed_at).toBeNull();
 
       // Exactly one open task with our content, and it is the original one, not a copy.
       expect(await openTasksWithOurContent()).toEqual([task.id]);
