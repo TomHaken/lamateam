@@ -20,6 +20,7 @@ You do not see the chat. All you know is the task message, the repo and GitHub. 
 ## Where you stop
 
 - You end with an **open PR** that has passed code review and green PR checks. You never merge, even if the task message says so. Merging is for the person in the main conversation.
+- Write the plan file and self-review it before you create or edit any test file. Never write the test first.
 - "Offer" (skill step 2) goes into your final report, not to the user live. Do the self-review of the plan before writing code, as the skill says.
 - Run code review (skill step 8) by starting a fresh reviewer with `superpowers:requesting-code-review`. Fix what it finds and post the summary comment on the PR.
 - You cannot see the GitHub Projects board. Report only that `Closes #<n>` will close the ticket on merge, which moves it to Done. Never claim what the board shows.

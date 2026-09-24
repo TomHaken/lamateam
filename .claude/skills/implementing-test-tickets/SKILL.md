@@ -44,12 +44,13 @@ Every test goes from ticket to merged PR through one fixed workflow. **Violating
 
 ## Red Flags - stop and go back to the workflow
 
-| Thought                                                      | Reality                                                                                       |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| "No time for a plan / review"                                | A 10-line plan and one reviewer take minutes. Say so, don't skip                              |
-| "No time to run it against the real account, lint is enough" | An unrun test is not done. Run it, or tell the user plainly it is unverified work in progress |
-| "It passed, done"                                            | Passing proves nothing until the mutation check fails it                                      |
-| "I'll just rewrite the file"                                 | A teammate may have changed it. Pull, diff, keep their work                                   |
-| "User said push it" → push to `main` / merge                 | "Push" means PR. Merge only on an explicit merge request                                      |
-| "I can't see the board, so it isn't there"                   | Say "I can't see it, please check", never claim what you can't see                            |
-| "Reviewed = verified"                                        | Verification (runs) and code review (fresh reviewer) are different steps                      |
+| Thought                                                      | Reality                                                                                                              |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| "No time for a plan / review"                                | A 10-line plan and one reviewer take minutes. Say so, don't skip                                                     |
+| "I'll write the test first and the plan after"               | The plan file exists and is self-reviewed before the first line of test code. Otherwise it is a write-up, not a plan |
+| "No time to run it against the real account, lint is enough" | An unrun test is not done. Run it, or tell the user plainly it is unverified work in progress                        |
+| "It passed, done"                                            | Passing proves nothing until the mutation check fails it                                                             |
+| "I'll just rewrite the file"                                 | A teammate may have changed it. Pull, diff, keep their work                                                          |
+| "User said push it" → push to `main` / merge                 | "Push" means PR. Merge only on an explicit merge request                                                             |
+| "I can't see the board, so it isn't there"                   | Say "I can't see it, please check", never claim what you can't see                                                   |
+| "Reviewed = verified"                                        | Verification (runs) and code review (fresh reviewer) are different steps                                             |
